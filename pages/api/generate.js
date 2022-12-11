@@ -8,13 +8,13 @@ const openai = new OpenAIApi(configuration);
 let prompt = ''
 
 export default async function (req, res) {
-  prompt += `\n提问:` + req.query.animal + `\nAI:`
-  // prompt += `\n提问:` + req.body.animal + `\nAI:`
+  // prompt += `\n提问:` + req.query.animal + `\nAI:`
+  prompt += `\n提问:` + req.body.animal + `\nAI:`
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
     prompt,
     temperature: 0.9,
-    max_tokens: 250,
+    max_tokens: 150,
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0.6,
