@@ -5,24 +5,29 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+let prompt = ''
+
 export default async function (req, res) {
+  prompt += `\n提问:` + req.query.animal + `\nAI:`
+  // prompt += `\n提问:` + req.body.animal + `\nAI:`
   const completion = await openai.createCompletion({
-    model: "text-davinci-002",
-    prompt: generatePrompt(req.body.animal),
-    temperature: 0.6,
-  });
-  res.status(200).json({ result: completion.data.choices[0].text });
-}
-
-function generatePrompt(animal) {
-  const capitalizedAnimal =
-    animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `Suggest three names for an animal that is a superhero.
-
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: ${capitalizedAnimal}
-Names:`;
+    model: "text-davinci-003",
+    prompt,
+    temperature: 0.9,
+    max_tokens: 250,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0.6,
+    stop: [" 提问:", " AI:"],
+    stream: true
+  }, { responseType: 'stream' });
+  // console.log(typeof completion.data)
+  res.setHeader("content-type", "text/event-stream")
+  completion.data.pipe(res)
+  // completion.on("data", (e) => {
+  //   console.log(e)
+  // })
+  // // prompt += completion.data.choices[0].text
+  // res.status(200);
+  // res.write("some thing")
 }
