@@ -40,6 +40,8 @@ export default function Home() {
 
     let content = result;
 
+    let appendStr = ''
+
     // read() 返回了一个 promise
     // 当数据被接收时 resolve
     reader.read().then(function processText({ done, value }) {
@@ -48,6 +50,13 @@ export default function Home() {
       // value - 数据片段。当 done 为 true 时始终为 undefined
       if (done) {
         console.log("Stream complete", value);
+        fetch("/api/modify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ result: appendStr }),
+        });
         return;
       }
 
@@ -66,7 +75,9 @@ export default function Home() {
 
       console.log(texts);
 
-      content += texts.join('');
+      appendStr = texts.join('')
+
+      content += appendStr;
 
       setResult(content);
 

@@ -5,14 +5,16 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-let prompt = ''
-
 export default async function (req, res) {
+  console.log(req.session)
+  if (!req.session.prompt) {
+    req.session.prompt = ''
+  }
   // prompt += `\n提问:` + req.query.animal + `\nAI:`
-  prompt += `\n提问:` + req.body.animal + `\nAI:`
+  req.session.prompt += `\n提问:` + req.body.animal + `\nAI:`
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
-    prompt,
+    prompt: req.session.prompt,
     temperature: 0.9,
     max_tokens: 150,
     top_p: 1,
